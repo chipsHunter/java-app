@@ -10,13 +10,14 @@ pipeline {
         stage('Test Backend Agent') {
             steps {
                 container(name: 'java') {  
+                    checkout scm
                     sh '''
                         echo "--- Загрузка ENV ---"
                         set -a && . /etc/secrets/secret.env && set +a
                         
                         update-ca-certificates
 
-                        checkout scm
+                        
                     '''
                 }
             }
