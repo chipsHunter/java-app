@@ -6,7 +6,6 @@ pipeline {
     environment {
         REGISTRY = 'registry.stasian.net'
         BUILD_TAG = "${env.BUILD_ID}"
-        APP_NAME = 'ci-app'
     }
 
     stages {
@@ -27,7 +26,7 @@ pipeline {
         stage('Build Backend') {
             steps {
                 container(name: 'docker') { 
-                    sh 'ls -lah'
+                    sh "ls -lah"
                     sh "docker build -t ${REGISTRY}/backend:${BUILD_TAG} ./back-end/"
                     sh "docker push ${REGISTRY}/backend:${BUILD_TAG}"
                 }
