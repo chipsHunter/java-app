@@ -15,6 +15,7 @@ pipeline {
                             set -a && . /etc/secrets/secret.env && set +a
                             gradle --version
                             update-ca-certificates
+                            ls -lah .
                         '''
                     } 
                 } 
