@@ -14,7 +14,7 @@ pipeline {
                         echo "--- Загрузка ENV ---"
                         set -a && . /etc/secrets/secret.env && set +a
                         
-                        sudo update-ca-certificates
+                        update-ca-certificates
                     '''
                 }
             }
