@@ -15,6 +15,8 @@ pipeline {
                         set -a && . /etc/secrets/secret.env && set +a
                         
                         update-ca-certificates
+
+                        checkout scm
                     '''
                 }
             }
