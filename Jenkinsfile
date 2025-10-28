@@ -1,42 +1,53 @@
 pipeline {
     agent { 
-        label 'worker' 
+        label 'docker-builder' 
     } 
 
-    stages {
-        stage('Test Backend Agent') {
-            steps {
-                ws('/home/jenkins/agent/workspace/tryyyyy') {
-                    container(name: 'java') {  
-                        checkout scm 
-                        
-                        sh '''
-                            echo "--- Загрузка ENV ---"
-                            set -a && . /etc/secrets/secret.env && set +a
-                            gradle --version
-                            update-ca-certificates
-                            ls -lah .
-                        '''
-                        script {
-                            def appImage = docker.build("registry.stasian.net/backend:${env.BUILD_NUMBER}", 
-                                                       "-f back-end/Dockerfile back-end")
-                            appImage.push()
-                        }
-                    } 
-                } 
-            }
-        }
-        stage('Test Frontend Agent') {
-            steps {
-                ws('/home/jenkins/agent/workspace/tryyyyy') {
-                    container(name: 'front') {
-                        echo '--- Проверка Инструмента внутри контейнера node ---'
-                        sh 'node --version' 
-                        sh 'npm --version' 
-                    } 
-                } 
-            }
-        }
+    environment {
+        REGISTRY = 'registry.stasian.net'
+        BUILD_TAG = "${env.BUILD_ID}"
+        APP_NAME = 'ci-app'
     }
 
+    stages {
+        stage('Checkout & Setup') {
+            steps {
+                container(name: 'docker') { /
+                    checkout scm 
+                    
+                    sh '''
+                        echo "--- Загрузка ENV ---"
+                        set -a && . /etc/secrets/secret.env && set +a
+                        update-ca-certificates
+                    '''
+                }
+            }
+        }
+        
+        stage('Build Backend') {
+            steps {
+                container(name: 'docker') { 
+                    sh 'ls -lah'
+                    sh "docker build -t ${REGISTRY}/backend:${BUILD_TAG} ./back-end/"
+                    sh "docker push ${REGISTRY}/backend:${BUILD_TAG}"
+                }
+            }
+        }
+
+        // --- СТАДИЯ 3: СБОРКА И ПУШ ФРОНТЕНДА ---
+        stage('Build Frontend') {
+            steps {
+                container(name: 'docker') {
+                    echo "--- Сборка Frontend ---"
+                    // 1. Сборка Frontend (Docker делает всю работу, включая npm install)
+                    sh "docker build -t ${REGISTRY}/frontend:${BUILD_TAG} ./front-end/"
+                    sh "docker push ${REGISTRY}/frontend:${BUILD_TAG}"
+                }
+            }
+        }
+
+       
+    }
+    
+    post { always { cleanWs() } }
 }
