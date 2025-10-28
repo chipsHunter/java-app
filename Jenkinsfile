@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout & Setup') {
             steps {
-                container(name: 'docker') { /
+                container(name: 'docker') { 
                     checkout scm 
                     
                     sh '''
