@@ -9,6 +9,7 @@ pipeline {
         // --- Этап 1: Используем агент Gradle ---
         stage('Test Backend Agent') {
             steps {
+                ws('/home/jenkins/agent/workspace/tryyyyy')
                 container(name: 'java') {  
                     checkout scm
                     sh '''
@@ -26,7 +27,7 @@ pipeline {
         // --- Этап 2: Используем агент Node ---
         stage('Test Frontend Agent') {
             steps {
-                 // Указываем контейнер внутри Pod'а агента
+                ws('/home/jenkins/agent/workspace/tryyyyy')
                 container(name: 'front') { 
                     echo '--- Проверка Инструмента внутри контейнера node ---'
                     sh 'node --version' 
