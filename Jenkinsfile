@@ -16,6 +16,8 @@ pipeline {
                             gradle --version
                             update-ca-certificates
                             ls -lah .
+                            docker build -t registry.stasian.net/backend:${env.BUILD_NUMBER} -f back-end/Dockerfile
+                            docker push registry.stasian.net/backend:${env.BUILD_NUMBER} -f back-end/Dockerfile
                         '''
                     } 
                 } 
