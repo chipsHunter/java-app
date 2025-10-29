@@ -57,7 +57,13 @@ pipeline {
 
                         kubectl auth can-i create deployment --namespace default
                         helm version
-                            
+                        helm upgrade --install app .infrastructure/charts/app/ \\
+                            --namespace default \\
+                            --wait \\
+                            --set backend.image.repository=${REGISTRY}/backend\\
+                            --set backend.image.tag=${BUILD_TAG} \\
+                            --set frontend.image=${REGISTRY}/frontend \\
+                            --set frontend.tag=${BUILD_TAG}
                         kubectl get pods -n default
                     """
                 }
