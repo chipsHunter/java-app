@@ -1,0 +1,38 @@
+replicaCount: 1
+
+ingress:
+  enabled: true
+
+global:
+  backend:
+    port: 8081
+    hostname: backend
+
+frontend:
+  image: "frontend"
+  tag: "latest"
+  domainName: "stasian.net"
+  imagePullPolicy: Never
+  port: 80
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 100m
+      memory: 200Mi
+
+backend:
+  replicaCount: 1
+  image:
+    repository: backend
+    pullPolicy: Never
+    tag: "latest"
+  port: 8081
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 200Mi
