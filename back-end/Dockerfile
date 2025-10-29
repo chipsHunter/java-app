@@ -9,12 +9,11 @@ RUN gradle bootJar
 #------final stage------------#
 FROM alpine/java:21-jre@sha256:a0433ecc16a0a9e389e216753019cc97f69f0973aecfadaf357d31838078bab5
 
-RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S -G appgroup appuser
 
 WORKDIR /app
 
 EXPOSE 8081
-COPY --from=builder --chown=appuser:appuser /app/build/libs/ci-back-end-0.0.1-SNAPSHOT.jar /app/app.jar
+COPY --from=builder  /app/build/libs/ci-back-end-0.0.1-SNAPSHOT.jar /app/app.jar
 
 USER appuser
 
