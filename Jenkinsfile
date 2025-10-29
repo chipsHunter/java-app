@@ -54,7 +54,7 @@ pipeline {
             steps {
                 container(name: 'k8s') {
                     sh """
-                        // kubectl config current-context
+
                         kubectl auth can-i create deployment --namespace default
                         helm version
                     """
