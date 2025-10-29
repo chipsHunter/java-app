@@ -37,5 +37,5 @@ spec:
               - name: "X-Forwarded-Proto"
                 value: https
       backendRefs:
-        - name: {{ include "frontend.fullname" . }}
+        - name: app-frontend
           port: 80
