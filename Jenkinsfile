@@ -4,6 +4,7 @@ pipeline {
     environment {
         REGISTRY = 'registry.stasian.net'
         BUILD_TAG = "${env.BUILD_ID}"
+        CACHE_REPO = "${REGISTRY}/kaniko-cache"
     }
 
     stages {
@@ -12,11 +13,11 @@ pipeline {
                 label 'docker-worker' 
             } 
             steps {
-                container(name: 'docker') { 
+                container(name: 'jnlp') { 
                     checkout scm 
                     
                     sh '''
-                        set -a && . /etc/secrets/secret.env && set +a
+                        ls -lah .
                     '''
                 }
             }
@@ -27,9 +28,15 @@ pipeline {
                 label 'docker-worker' 
             } 
             steps {
-                container(name: 'docker') { 
-                    sh "docker build -t ${REGISTRY}/backend:${BUILD_TAG} ./back-end/"
-                    sh "docker push ${REGISTRY}/backend:${BUILD_TAG}"
+                container(name: 'kaniko') {
+                    sh """
+                    /kaniko/executor \\
+                        --context=./back-end \\
+                        --dockerfile=./back-end/Dockerfile \\
+                        --destination=${REGISTRY}/backend:${BUILD_TAG} \\
+                        --cache=true \\
+                        --cache-repo=${CACHE_REPO}
+                    """
                 }
             }
         }
@@ -39,11 +46,15 @@ pipeline {
                 label 'docker-worker' 
             } 
             steps {
-                container(name: 'docker') {
-                    echo "--- Сборка Frontend ---"
-                    // 1. Сборка Frontend (Docker делает всю работу, включая npm install)
-                    sh "docker build -t ${REGISTRY}/frontend:${BUILD_TAG} ./front-end/"
-                    sh "docker push ${REGISTRY}/frontend:${BUILD_TAG}"
+                container(name: 'kaniko') {
+                    sh """
+                    /kaniko/executor \\
+                        --context=./front-end \\
+                        --dockerfile=./front-end/Dockerfile \\
+                        --destination=${REGISTRY}/frontend:${BUILD_TAG} \\
+                        --cache=true \\
+                        --cache-repo=${CACHE_REPO}
+                    """
                 }
             }
         }
