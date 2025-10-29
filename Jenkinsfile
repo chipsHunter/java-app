@@ -64,6 +64,7 @@ pipeline {
                             --set backend.image.tag=${BUILD_TAG} \\
                             --set frontend.image=${REGISTRY}/frontend \\
                             --set frontend.tag=${BUILD_TAG}
+                            --set frontend.domainName="app.stasian.net"
                         kubectl get pods -n default
                     """
                 }
