@@ -15,6 +15,5 @@ WORKDIR /app
 EXPOSE 8081
 COPY --from=builder  /app/build/libs/ci-back-end-0.0.1-SNAPSHOT.jar /app/app.jar
 
-USER appuser
 
 CMD ["java", "-jar", "/app/app.jar"]
