@@ -16,9 +16,7 @@ pipeline {
                     checkout scm 
                     
                     sh '''
-                        echo "--- Загрузка ENV ---"
                         set -a && . /etc/secrets/secret.env && set +a
-                        ls -lah /usr/local/share/ca-certificates
                     '''
                 }
             }
@@ -30,7 +28,6 @@ pipeline {
             } 
             steps {
                 container(name: 'docker') { 
-                    sh "ls -lah"
                     sh "docker build -t ${REGISTRY}/backend:${BUILD_TAG} ./back-end/"
                     sh "docker push ${REGISTRY}/backend:${BUILD_TAG}"
                 }
@@ -57,9 +54,6 @@ pipeline {
             steps {
                 container(name: 'k8s') {
                     sh """
-                        echo "--- Загрузка ENV ---"
-                        set -a && . /etc/secrets/secret.env && set +a
-                        ls -lah /usr/local/share/ca-certificates
                         kubectl config current-context
                         kubectl auth can-i create deployment --namespace default
                         helm version
